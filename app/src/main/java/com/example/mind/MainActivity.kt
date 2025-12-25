@@ -1,7 +1,11 @@
 // ...existing code...
 package com.example.mind
 
-    }
+import androidx.compose.material3.Card
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+
+}
 }
 // Removed hidden/corrupted content
 // --- Data Classes ---
