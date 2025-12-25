@@ -1,7 +1,6 @@
+// ...existing code...
 package com.example.mind
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,33 +10,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import com.example.mind.R
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +65,9 @@ enum class AppDestinations(
     PROFILE("Profile", Icons.Filled.Person),
 }
 
+// ...existing code...
+
+// ...existing code...
 // --- Data Classes ---
 data class Question(
     val text: String,
@@ -91,17 +84,10 @@ data class Post(
     var likes: Int,
     var youLiked: Boolean,
     val tags: List<String> = emptyList()
-)
 
-data class FeaturedRoom(val name: String, val desc: String, val link: String)
-data class WellnessResource(val image: Int, val title: String, val preview: String, val url: String)
-data class UpcomingRoom(val title: String, val time: String, val icon: String)
-data class Task(val id: Int, val text: String, var isCompleted: Boolean)
-data class Message(
-    val text: String,
-    val isFromUser: Boolean,
-    val timestamp: String
-)
+// ...existing code...
+
+
 
 data class ChatItem(
     val id: String = UUID.randomUUID().toString(),
@@ -122,23 +108,7 @@ val QUESTIONS = listOf(
     Question("Do you have previous experience with mental health apps?", listOf("Yes", "No"), false),
     Question("Would you like to add anything else?", listOf("No, nothing", "Yes, I'll share later"), false)
 )
-val AVATARS = listOf("Sunflower", "Rose", "Lily", "Tulip", "Daisy", "Orchid", "Lotus", "Peony", "Violet")
 
-@Composable
-fun MindScapeApp(darkTheme: Boolean = true, onToggleTheme: () -> Unit = {}) {
-    var currentScreen by remember { mutableStateOf(Screen.SPLASH) }
-
-    when (currentScreen) {
-        Screen.SPLASH -> SplashScreen { currentScreen = Screen.AUTH }
-        Screen.AUTH -> AuthScreen(
-            onLogin = { currentScreen = Screen.MAIN },
-            onSignup = { currentScreen = Screen.QUESTIONNAIRE }
-        )
-        Screen.QUESTIONNAIRE -> QuestionnaireScreen { currentScreen = Screen.AVATAR }
-        Screen.AVATAR -> AvatarScreen { currentScreen = Screen.MAIN }
-        Screen.MAIN -> MainScreen(darkTheme = darkTheme, onToggleTheme = onToggleTheme)
-    }
-}
 
 @Composable
 fun SplashScreen(onDone: () -> Unit) {
@@ -596,11 +566,11 @@ fun HomeScreen() {
                                 Icon(Icons.Filled.ArrowBack, contentDescription = "Previous")
                             }
 
-                            Button(onClick = {
-                                openJitsi(context, featuredRooms[currentRoomIndex].second)
-                            }) {
-                                Text("Join")
-                            }
+                                Button(onClick = {
+                                    // Join room action placeholder
+                                }) {
+                                    Text("Join")
+                                }
 
                             IconButton(onClick = {
                                 currentRoomIndex = (currentRoomIndex + 1) % featuredRooms.size
@@ -628,18 +598,9 @@ fun HomeScreen() {
                 // Upcoming Rooms / Sessions
                 item {
                     SectionCard(title = "Upcoming Sessions") {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            UpcomingRoom(
-                                title = "Guided Meditation – 6:00 PM",
-                                url = "https://meet.jit.si/MindscapeMeditation",
-                                context = context
-                            )
-                            UpcomingRoom(
-                                title = "Group Chat – 8:00 PM",
-                                url = "https://meet.jit.si/MindscapeGroupChat",
-                                context = context
-                            )
-                        }
+                        Text("Guided Meditation – 6:00 PM (https://meet.jit.si/MindscapeMeditation)")
+                        Spacer(Modifier.height(8.dp))
+                        Text("Group Chat – 8:00 PM (link coming soon)")
                     }
                 }
 
@@ -662,8 +623,21 @@ fun HomeScreen() {
 }
 
 @Composable
+@Composable
 fun SectionCard(title: String, content: @Composable () -> Unit) {
-    TODO("Not yet implemented")
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Spacer(Modifier.height(8.dp))
+            content()
+        }
+    }
 }
 
 
@@ -676,8 +650,21 @@ fun getGreeting(): String {
         else -> "Hello"
     }
 }
-                    }
-                },
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConversationScreen(
+    chat: ChatItem,
+    onBack: () -> Unit,
+    onSendMessage: (String) -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(chat.name, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")

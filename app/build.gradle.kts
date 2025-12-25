@@ -11,7 +11,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.mind"
+        applicationId = "MindScape.v1"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

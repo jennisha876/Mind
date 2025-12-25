@@ -1,14 +1,6 @@
 # admin_dashboard.py
 import os
-import json
-import io
-import zipfile
-import datetime
-from collections import Counter
 
-import streamlit as st
-import pandas as pd
-import altair as alt
 
 # -----------------------
 # CONFIG - Hard-coded admin
@@ -30,6 +22,10 @@ SETTINGS_FILE = os.path.join(DATA_DIR, "settings.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # ...existing code...
+
+def main():
+    # Placeholder for main admin dashboard logic
+    print("Admin dashboard started.")
 
 if __name__ == "__main__":
     main()
