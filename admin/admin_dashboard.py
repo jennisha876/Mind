@@ -77,7 +77,10 @@ def save_vitals(vitals):
 
 
 def load_settings():
-    return read_json(SETTINGS_FILE, {"posting_enabled": True, "maintenance_mode": False})
+    return read_json(
+        SETTINGS_FILE,
+        {"posting_enabled": True, "maintenance_mode": False}
+    )
 
 
 def save_settings(settings):
@@ -170,8 +173,8 @@ def users_page():
     st.title("Users Management")
     users = load_users()
     posts = load_posts()
-    vitals = load_vitals()
     settings = load_settings()
+    vitals = load_vitals()
 
     st.write(f"Total users: {len(users)}")
     if not users:
