@@ -133,7 +133,6 @@ def overview_page():
     users = load_users()
     posts = load_posts()
     rooms = load_rooms()
-    vitals = load_vitals()
     settings = load_settings()
 
     total_users = len(users)
@@ -156,9 +155,22 @@ def overview_page():
         if "timestamp" in df_posts.columns:
             df_posts["timestamp"] = pd.to_datetime(df_posts["timestamp"])
             df_posts["date"] = df_posts["timestamp"].dt.date
-            last_30 = df_posts[df_posts["timestamp"] >= (pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=30))]
-            posts_by_day = last_30.groupby("date").size().reset_index(name="count")
-            chart = alt.Chart(posts_by_day).mark_bar().encode(x="date:T", y="count:Q").properties(title="Posts in last 30 days")
+            last_30 = df_posts[
+                df_posts["timestamp"] >= (
+                    pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=30)
+                )
+            ]
+            posts_by_day = (
+                last_30.groupby("date")
+                .size()
+                .reset_index(name="count")
+            )
+            chart = (
+                alt.Chart(posts_by_day)
+                .mark_bar()
+                .encode(x="date:T", y="count:Q")
+                .properties(title="Posts in last 30 days")
+            )
             st.altair_chart(chart, use_container_width=True)
         else:
             st.info("No timestamps in posts to build charts.")
@@ -171,9 +183,7 @@ def overview_page():
 # -----------------------
 def users_page():
     st.title("Users Management")
-    users = load_users()
     posts = load_posts()
-    settings = load_settings()
     vitals = load_vitals()
 
     st.write(f"Total users: {len(users)}")
@@ -190,8 +200,13 @@ def users_page():
         st.dataframe(df[display_cols].astype(str))
 
     st.subheader("User actions")
-    email_to_manage = st.selectbox("Select a user (by email)", [u["email"] for u in users])
-    selected_user = next((u for u in users if u["email"] == email_to_manage), None)
+    email_to_manage = st.selectbox(
+        "Select a user (by email)",
+        [u["email"] for u in users]
+    )
+    selected_user = next(
+        (u for u in users if u["email"] == email_to_manage), None
+    )
 
     if selected_user:
         st.write("Selected user:", email_to_manage)
@@ -202,7 +217,10 @@ def users_page():
                 users = [u for u in users if u["email"] != email_to_manage]
                 save_users(users)
                 # remove user's posts
-                posts = [p for p in posts if p.get("author") != email_to_manage]
+                posts = [
+                    p for p in posts
+                    if p.get("author") != email_to_manage
+                ]
                 save_posts(posts)
                 # remove user's vitals (if stored keyed by id or email)
                 # attempt both styles: if vitals keyed by user id/email
@@ -218,14 +236,23 @@ def users_page():
                         vitals_changed = True
                 if vitals_changed:
                     save_vitals(vitals)
-                st.success(f"Deleted user {email_to_manage} and their posts/vitals (if present).")
+                st.success(
+                    f"Deleted user {email_to_manage} and their posts/vitals "
+                    f"(if present)."
+                )
                 st.rerun()
         with col2:
             if st.button("Delete user's posts"):
                 before = len(posts)
-                posts = [p for p in posts if p.get("author") != email_to_manage]
+                posts = [
+                    p for p in posts
+                    if p.get("author") != email_to_manage
+                ]
                 save_posts(posts)
-                st.success(f"Removed {before - len(posts)} posts by {email_to_manage}.")
+                st.success(
+                    f"Removed {before - len(posts)} posts by "
+                    f"{email_to_manage}."
+                )
                 st.rerun()
         with col3:
             if st.button("Generate & download report (CSV)"):
@@ -253,14 +280,24 @@ def users_page():
                         "heartRate": v.get("heartRate")
                     })
                 if not report_items:
-                    st.info("No posts or vitals for this user to include in the report.")
+                    st.info(
+                        "No posts or vitals for this user to include in the "
+                        "report."
+                    )
                 else:
-                    df_report = pd.DataFrame(report_items).sort_values("timestamp")
+                    df_report = (
+                        pd.DataFrame(report_items).sort_values("timestamp")
+                    )
                     csv_bytes = df_report.to_csv(index=False).encode("utf-8")
                     st.download_button(
                         label="Download report (CSV)",
                         data=csv_bytes,
-                        file_name=f"{email_to_manage}_report_{datetime.datetime.now().date()}.csv",
+                        file_name=(
+                            (
+                                f"{email_to_manage}_report_"
+                                f"{datetime.datetime.now().date()}.csv"
+                            )
+                        ),
                         mime="text/csv"
                     )
 
@@ -300,12 +337,24 @@ def analytics_page():
         if "timestamp" in dfp.columns:
             dfp["timestamp"] = pd.to_datetime(dfp["timestamp"])
             dfp["date"] = dfp["timestamp"].dt.date
-            window = dfp[dfp["timestamp"] >= (pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=60))]
+            window = dfp[
+                dfp["timestamp"] >= (
+                    pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=60)
+                )
+            ]
             daily = window.groupby("date").size().reset_index(name="count")
-            chart = alt.Chart(daily).mark_line(point=True).encode(x="date:T", y="count:Q").properties(width=700, height=300)
+            chart = (
+                alt.Chart(daily)
+                .mark_line(point=True)
+                .encode(x="date:T", y="count:Q")
+                .properties(width=700, height=300)
+            )
             st.altair_chart(chart, use_container_width=True)
         else:
-            st.info("Posts don't include timestamps — add timestamps to enable charts.")
+            st.info(
+                "Posts don't include timestamps — "
+                "add timestamps to enable charts."
+            )
     else:
         st.info("No posts yet.")
 
@@ -329,7 +378,9 @@ def analytics_page():
                 except Exception:
                     pass
     if dau_counter:
-        dau_df = pd.DataFrame(sorted(dau_counter.items()), columns=["date", "activity_count"])
+        dau_df = pd.DataFrame(
+            sorted(dau_counter.items()), columns=["date", "activity_count"]
+        )
         chart = (
             alt.Chart(dau_df)
             .mark_bar()
@@ -424,12 +475,11 @@ def settings_page():
         save_posts([])
         st.success("All posts removed.")
     if st.button("Delete ALL users (except admin)"):
-        users = load_users()
-        users = [
-            u for u in users
+        filtered_users = [
+            u for u in load_users()
             if u.get("email") == ADMIN_EMAIL or u.get("role") == "admin"
         ]
-        save_users(users)
+        save_users(filtered_users)
         st.success("All non-admin users removed.")
 
 
