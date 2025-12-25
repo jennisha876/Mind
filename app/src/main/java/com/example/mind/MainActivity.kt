@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -153,7 +152,7 @@ fun SplashScreen(onDone: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.mipmap.ic_launcher_foreground1),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "MindScape Logo",
                 modifier = Modifier.size(120.dp)
             )
@@ -565,43 +564,192 @@ fun ChatRow(chat: ChatItem, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConversationScreen(
-    chat: ChatItem,
-    onBack: () -> Unit,
-    onSendMessage: (String) -> Unit
-) {
-    var text by remember { mutableStateOf("") }
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
+fun HomeScreen() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    LaunchedEffect(chat.messages.size) {
-        coroutineScope.launch {
-            if (chat.messages.isNotEmpty()) {
-                listState.animateScrollToItem(0)
-            }
+    // Featured rooms slideshow state
+    val featuredRooms = listOf(
+        "Calm Cove" to "https://meet.jit.si/CalmCoveMindscape",
+        "Focus Forest" to "https://meet.jit.si/FocusForestMindscape",
+        "Social Lounge" to "https://meet.jit.si/SocialLoungeMindscape"
+    )
+    var currentRoomIndex by remember { mutableStateOf(0) }
+
+    // Automatic slideshow
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(4000)
+            currentRoomIndex = (currentRoomIndex + 1) % featuredRooms.size
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(getAvatarFor(chat), fontSize = 18.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Spacer(Modifier.height(12.dp))
+                Text("Menu", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
+                NavigationDrawerItem(icon = { Icon(Icons.Filled.Book, null) }, label = { Text("Journal") }, selected = false, onClick = {})
+                NavigationDrawerItem(icon = { Icon(Icons.Filled.Spa, null) }, label = { Text("Breathing") }, selected = false, onClick = {})
+                NavigationDrawerItem(icon = { Icon(Icons.Filled.MusicNote, null) }, label = { Text("Listen Music") }, selected = false, onClick = {})
+                NavigationDrawerItem(icon = { Icon(Icons.Filled.Person, null) }, label = { Text("Customize Avatar") }, selected = false, onClick = {})
+                NavigationDrawerItem(icon = { Icon(Icons.Filled.Favorite, null) }, label = { Text("Vitals") }, selected = false, onClick = {})
+            }
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("${getGreeting()}, Jennisha 👋") },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Filled.Menu, contentDescription = "Menu")
                         }
-                        Spacer(Modifier.width(8.dp))
-                        Column {
-                            Text(chat.name, fontWeight = FontWeight.Bold)
-                            if (chat.isAI) {
-                                Text("Always available", style = MaterialTheme.typography.bodySmall)
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                )
+            }
+        ) { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+
+                // Featured Rooms (Manual + Automatic Slideshow)
+                item {
+                    SectionCard(title = "Featured Rooms") {
+                        Text(featuredRooms[currentRoomIndex].first)
+                        Spacer(Modifier.height(8.dp))
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            IconButton(onClick = {
+                                currentRoomIndex =
+                                    if (currentRoomIndex == 0) featuredRooms.lastIndex else currentRoomIndex - 1
+                            }) {
+                                Icon(Icons.Filled.ArrowBack, contentDescription = "Previous")
+                            }
+
+                            Button(onClick = {
+                                openJitsi(context, featuredRooms[currentRoomIndex].second)
+                            }) {
+                                Text("Join")
+                            }
+
+                            IconButton(onClick = {
+                                currentRoomIndex = (currentRoomIndex + 1) % featuredRooms.size
+                            }) {
+                                Icon(Icons.Filled.ArrowForward, contentDescription = "Next")
                             }
                         }
+                    }
+                }
+
+                // Vitals
+                item {
+                    SectionCard(title = "Your Vitals") {
+                        Text("Heart Rate: 72 bpm\nMood: Calm 😊")
+                    }
+                }
+
+                // Tip of the Day
+                item {
+                    SectionCard(title = "Tip of the Day") {
+                        Text("Pause for 60 seconds and take slow, deep breaths to reset your mind.")
+                    }
+                }
+
+                // Upcoming Rooms / Sessions
+                item {
+                    SectionCard(title = "Upcoming Sessions") {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            UpcomingRoom(
+                                title = "Guided Meditation – 6:00 PM",
+                                url = "https://meet.jit.si/MindscapeMeditation",
+                                context = context
+                            )
+                            UpcomingRoom(
+                                title = "Group Chat – 8:00 PM",
+                                url = "https://meet.jit.si/MindscapeGroupChat",
+                                context = context
+                            )
+                        }
+                    }
+                }
+
+                // Today’s Tasks
+                item {
+                    SectionCard(title = "Today’s Tasks") {
+                        Text("✔ Journal for 5 minutes\n✔ Drink water\n⬜ Evening reflection")
+                    }
+                }
+
+                // Wellness Resources
+                item {
+                    SectionCard(title = "Wellness Resources") {
+                        Text("• Anxiety coping tools\n• Sleep sounds\n• Crisis support")
+                    }
+                }
+            }
+        }
+    }
+}
+                    @Composable
+                    fun UpcomingRoom(title: String, url: String, context: android.content.Context) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(title)
+                            Button(onClick = { openJitsi(context, url) }) {
+                                Text("Join")
+                            }
+                        }
+                    }
+
+                    @Composable
+                    fun SectionCard(
+                        title: String,
+                        content: @Composable ColumnScope.() -> Unit
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(title, style = MaterialTheme.typography.titleMedium)
+                                Spacer(Modifier.height(8.dp))
+                                content()
+                            }
+                        }
+                    }
+
+                    fun openJitsi(context: android.content.Context, url: String) {
+                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                        context.startActivity(intent)
+                    }
+
+                    fun getGreeting(): String {
+                        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+                        return when (hour) {
+                            in 5..11 -> "Good morning"
+                            in 12..16 -> "Good afternoon"
+                            in 17..20 -> "Good evening"
+                            else -> "Hello"
+                        }
+                    }
                     }
                 },
                 navigationIcon = {
