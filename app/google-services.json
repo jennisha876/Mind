@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816523959378",
+    "project_id": "mindscape-abcd",
+    "storage_bucket": "mindscape-abcd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816523959378:android:574862464159a31916138b",
+        "android_client_info": {
+          "package_name": "MindScape.v1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhNztBekOMbHSQj-e5FHL62d8zTOaXtVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
