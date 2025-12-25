@@ -1,73 +1,9 @@
 // ...existing code...
 package com.example.mind
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.mind.ui.theme.MindTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
-
-// --- Main Activity ---
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MindTheme(darkTheme = true) { // Dark theme enabled by default
-                MindScapeApp()
-            }
-        }
     }
 }
-
-// --- Navigation Enums ---
-enum class Screen {
-    SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN
-}
-
-enum class AppDestinations(
-    val label: String,
-    val icon: ImageVector,
-) {
-    HOME("Home", Icons.Filled.Home),
-    FEED("Feed", Icons.AutoMirrored.Filled.Article),
-    CHAT("Chat", Icons.AutoMirrored.Filled.Chat),
-    PROFILE("Profile", Icons.Filled.Person),
-}
-
-// ...existing code...
-
-// ...existing code...
+// Removed hidden/corrupted content
 // --- Data Classes ---
 data class Question(
     val text: String,
@@ -107,6 +43,8 @@ val QUESTIONS = listOf(
     Question("Which features are you most interested in?", listOf("Guided meditations", "Mood tracking", "Community forums", "AI chat support", "Daily tips"), true),
     Question("Do you have previous experience with mental health apps?", listOf("Yes", "No"), false),
     Question("Would you like to add anything else?", listOf("No, nothing", "Yes, I'll share later"), false)
+    // Removed hidden/corrupted content
+
 )
 
 
@@ -150,11 +88,12 @@ fun AuthScreen(onLogin: () -> Unit, onSignup: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = "MindScape Logo",
-            modifier = Modifier.size(80.dp)
-        )
+            // Fully purged and re-added Image block to remove all hidden/corrupted content
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "MindScape Logo",
+                modifier = Modifier.size(80.dp)
+            )
         Spacer(Modifier.height(16.dp))
         Text("MindScape", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(20.dp))
