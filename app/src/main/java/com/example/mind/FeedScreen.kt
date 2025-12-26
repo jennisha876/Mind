@@ -23,16 +23,7 @@ import com.example.mind.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class Post(
-    val id: Int,
-    val user: String,
-    val avatarRes: Int,   // 👈 IMAGE RESOURCE
-    val text: String,
-    val timestamp: String,
-    val likes: Int,
-    val youLiked: Boolean,
-    val tags: List<String> = emptyList()
-)
+// Post data class is defined in MainActivity.kt or another shared file.
 
 @Composable
 fun FeedScreen(
@@ -143,116 +134,8 @@ fun FeedScreen(
     }
 }
 
-@Composable
-fun CreatePostCard(
-    text: String,
-    onTextChange: (String) -> Unit,
-    onPostClick: () -> Unit
-) {
-    Card(shape = RoundedCornerShape(16.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = onTextChange,
-                placeholder = { Text("Share your thoughts...") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.weight(1f))
-                Button(onClick = onPostClick) {
-                    Text("Post")
-                }
-            }
-        }
-    }
-}
+// CreatePostCard is defined in MainActivity.kt or another shared file.
 
-@Composable
-fun TrendingTopicsCard(
-    selectedTopic: String?,
-    onTopicClick: (String?) -> Unit
-) {
-    val topics = listOf("#Gratitude", "#SelfCare", "#Mindfulness")
+// TrendingTopicsCard is defined in MainActivity.kt or another shared file.
 
-    Card(shape = RoundedCornerShape(16.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Text("Trending Topics", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Row {
-                Text(
-                    "All",
-                    modifier = Modifier
-                        .padding(end = 12.dp)
-                        .clickable { onTopicClick(null) },
-                    fontWeight = if (selectedTopic == null) FontWeight.Bold else FontWeight.Normal
-                )
-                topics.forEach {
-                    Text(
-                        it,
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .clickable { onTopicClick(it) },
-                        fontWeight = if (selectedTopic == it) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PostCard(
-    post: Post,
-    currentUser: String,
-    onLikeClicked: () -> Unit,
-    onDeleteClicked: () -> Unit
-) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-
-                Image(
-                    painter = painterResource(post.avatarRes),
-                    contentDescription = "Avatar",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                )
-
-                Spacer(Modifier.width(8.dp))
-
-                Text(
-                    post.user,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(post.timestamp, fontSize = 12.sp)
-
-                if (post.user == currentUser) {
-                    IconButton(onClick = onDeleteClicked) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete")
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(8.dp))
-            Text(post.text)
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onLikeClicked) {
-                    Icon(
-                        if (post.youLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                        contentDescription = "Like"
-                    )
-                }
-                Text(post.likes.toString())
-                Spacer(Modifier.weight(1f))
-                Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Comment")
-                Spacer(Modifier.width(12.dp))
-                Icon(Icons.Default.Share, contentDescription = "Share")
-            }
-        }
-    }
-}
+// PostCard is defined in MainActivity.kt or another shared file.

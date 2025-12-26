@@ -1,0 +1,38 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Assemble Release APK",
+			"type": "shell",
+			"command": "./gradlew assembleRelease",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Assemble Release Bundle",
+			"type": "shell",
+			"command": "./gradlew bundleRelease",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Assemble Release Bundle",
+			"type": "shell",
+			"command": "./gradlew bundleRelease",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build"
+		}
+	]
+}

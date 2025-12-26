@@ -53,51 +53,8 @@ class MainActivity : ComponentActivity() {
 }
 
 // --- Navigation & Data Models ---
-enum class Screen {
-    SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN
-}
-
-enum class AppDestinations(
-    val label: String,
-    val icon: ImageVector,
-) {
-    HOME("Home", Icons.Filled.Home),
-    FEED("Feed", Icons.AutoMirrored.Filled.Article),
-    CHAT("Chat", Icons.AutoMirrored.Filled.Chat),
-    PROFILE("Profile", Icons.Filled.Person),
-}
-
-data class Question(
-    val text: String,
-    val options: List<String>,
-    val multi: Boolean
-)
-
-// Using String for avatar to represent emojis
-data class Post(
-    val id: Int,
-    val user: String,
-    val avatar: String, // Changed from Int resource to String emoji
-    val text: String,
-    val timestamp: String,
-    var likes: Int,
-    var youLiked: Boolean,
-    val tags: List<String> = emptyList()
-)
-
-data class Message(
-    val text: String,
-    val isFromUser: Boolean,
-    val timestamp: String
-)
-
-data class ChatItem(
-    val id: String = UUID.randomUUID().toString(),
-    val name: String,
-    val isGroup: Boolean = false,
-    val isAI: Boolean = false,
-    val messages: List<Message> = emptyList()
-)
+// --- Navigation & Data Models ---
+// enum class Screen, AppDestinations, Question, Post, Message, ChatItem are defined in their respective files.
 
 // --- Constants ---
 val QUESTIONS = listOf(
@@ -303,10 +260,10 @@ fun MainScreen(userAvatar: String, darkTheme: Boolean, onToggleTheme: () -> Unit
 
     val chats = remember {
         mutableStateListOf(
-            ChatItem(id = "ai-1", name = "Mindscape AI Assistant", isAI = true, messages = listOf(Message("Hi! I'm here to help you 24/7 🤖", false, "9:00 AM"))),
-            ChatItem(id = "user-1", name = "Sarah M.", messages = listOf(Message("Thank you for the support! 💙", true, "10:30 AM"))),
-            ChatItem(id = "user-2", name = "Dr. Anderson", messages = listOf(Message("Your next appointment is confirmed", false, "Yesterday"))),
-            ChatItem(id = "grp-1", name = "Wellness Group", isGroup = true, messages = listOf(Message("James: See you at today's session", false, "9:45 AM")))
+            com.example.mind.ChatItem(id = "ai-1", name = "Mindscape AI Assistant", isAI = true, messages = listOf(com.example.mind.Message(text = "Hi! I'm here to help you 24/7 🤖", isFromUser = false, timestamp = "9:00 AM"))),
+            com.example.mind.ChatItem(id = "user-1", name = "Sarah M.", messages = listOf(com.example.mind.Message(text = "Thank you for the support! 💙", isFromUser = true, timestamp = "10:30 AM"))),
+            com.example.mind.ChatItem(id = "user-2", name = "Dr. Anderson", messages = listOf(com.example.mind.Message(text = "Your next appointment is confirmed", isFromUser = false, timestamp = "Yesterday"))),
+            com.example.mind.ChatItem(id = "grp-1", name = "Wellness Group", isAI = false, messages = listOf(com.example.mind.Message(text = "James: See you at today's session", isFromUser = false, timestamp = "9:45 AM")))
         )
     }
 
@@ -314,9 +271,9 @@ fun MainScreen(userAvatar: String, darkTheme: Boolean, onToggleTheme: () -> Unit
         val index = chats.indexOfFirst { it.id == chatId }
         if (index != -1) {
             val chat = chats[index]
-            val updatedMessages = chat.messages + Message(messageText, true, "Now")
+            val updatedMessages = chat.messages + com.example.mind.Message(text = messageText, isFromUser = true, timestamp = "Now")
             chats[index] = if (chat.isAI) {
-                chat.copy(messages = updatedMessages + Message("I hear you. Can you tell me more?", false, "Now"))
+                chat.copy(messages = updatedMessages + com.example.mind.Message(text = "I hear you. Can you tell me more?", isFromUser = false, timestamp = "Now"))
             } else {
                 chat.copy(messages = updatedMessages)
             }
@@ -355,15 +312,12 @@ fun MainScreen(userAvatar: String, darkTheme: Boolean, onToggleTheme: () -> Unit
             } else {
                 when (currentDestination) {
                     AppDestinations.HOME -> HomeScreen()
-                    AppDestinations.FEED -> FeedScreen(currentUserAvatar = userAvatar)
+                    AppDestinations.FEED -> FeedScreen()
                     AppDestinations.CHAT -> ChatListScreen(
                         chats = chats,
-                        onChatClick = {
-                            val it = null
-                            currentChatId = it.id
-                        },
+                        onChatClick = { chat -> currentChatId = chat.id },
                         onNewChat = { name, isGroup ->
-                            val newChat = ChatItem(name = name, isGroup = isGroup)
+                            val newChat = com.example.mind.ChatItem(name = name, isAI = isGroup, messages = emptyList())
                             chats.add(newChat)
                             currentChatId = newChat.id
                         }
@@ -490,299 +444,30 @@ fun openJitsi(context: android.content.Context, url: String) {
 }
 
 
-@Composable
-fun FeedScreen(currentUserAvatar: String) {
-    val currentUser = "You"
-    val posts = remember {
-        mutableStateListOf(
-            Post(1, "Sarah", "🧘", "Just finished a 10-minute meditation. Feeling calm.", "10:30 AM", 12, false, listOf("#Mindfulness")),
-            Post(2, "John", "💪", "Hit the gym today. Progress over perfection!", "11:15 AM", 34, true, listOf("#SelfCare")),
-            Post(3, currentUser, currentUserAvatar, "Feeling grateful for the small things today.", "11:45 AM", 5, true, listOf("#Gratitude"))
-        )
-    }
+// FeedScreen is defined in FeedScreen.kt
 
-    var postText by remember { mutableStateOf("") }
-    var selectedTopic by remember { mutableStateOf<String?>(null) }
+// CreatePostCard is defined in FeedScreen.kt
 
-    val filteredPosts = if (selectedTopic == null) posts else posts.filter { it.tags.contains(selectedTopic) }
+// TrendingTopicsCard is defined in FeedScreen.kt
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item { 
-            val createPostCard = CreatePostCard(
-                text = postText,
-                onTextChange = {
-                    val it = ""
-                    postText = it
-                },
-                onPostClick = {
-                    if (postText.isNotBlank()) {
-                        posts.add(
-                            0,
-                            Post(
-                                id = posts.size + 1,
-                                user = currentUser,
-                                avatar = currentUserAvatar,
-                                text = postText,
-                                timestamp = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(
-                                    Date()
-                                ),
-                                likes = 0,
-                                youLiked = false,
-                                tags = postText.split(" ").filter { it.startsWith("#") })
-                        )
-                        postText = ""
-                    }
-                }
-            )
-        }
-
-        item { TrendingTopicsCard(selectedTopic = selectedTopic, onTopicClick = { selectedTopic = it }) }
-
-        items(filteredPosts, key = { it.id }) { post ->
-            PostCard(
-                post = post,
-                currentUser = currentUser,
-                onLikeClicked = {
-                    val index = posts.indexOfFirst { it.id == post.id }
-                    if (index != -1) {
-                        posts[index] = post.copy(likes = if (post.youLiked) post.likes - 1 else post.likes + 1, youLiked = !post.youLiked)
-                    }
-                },
-                onDeleteClicked = { posts.remove(post) }
-            )
-        }
-    }
-}
-
-@Composable
-fun CreatePostCard(text: String, onTextChange: (String) -> Unit, onPostClick: () -> Unit) {
-    Card(shape = RoundedCornerShape(16.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            OutlinedTextField(value = text, onValueChange = onTextChange, placeholder = { Text("Share your thoughts...") }, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.weight(1f))
-                Button(onClick = onPostClick) { Text("Post") }
-            }
-        }
-    }
-}
-
-@Composable
-fun TrendingTopicsCard(selectedTopic: String?, onTopicClick: (String?) -> Unit) {
-    val topics = listOf("#Gratitude", "#SelfCare", "#Mindfulness")
-    Card(shape = RoundedCornerShape(16.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Text("Trending Topics", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Row {
-                Text("All", modifier = Modifier.padding(end = 12.dp).clickable { onTopicClick(null) }, fontWeight = if (selectedTopic == null) FontWeight.Bold else FontWeight.Normal)
-                topics.forEach { Text(it, modifier = Modifier.padding(end = 12.dp).clickable { onTopicClick(it) }, fontWeight = if (selectedTopic == it) FontWeight.Bold else FontWeight.Normal) }
-            }
-        }
-    }
-}
-
-@Composable
-fun PostCard(post: Post, currentUser: String, onLikeClicked: () -> Unit, onDeleteClicked: () -> Unit) {
-    Card(shape = RoundedCornerShape(12.dp)) {
-        Column(Modifier.padding(12.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(post.avatar, fontSize = 24.sp, modifier = Modifier.padding(end = 8.dp)) // Display emoji
-                Spacer(Modifier.width(8.dp))
-                Text(post.user, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                Text(post.timestamp, fontSize = 12.sp)
-                if (post.user == currentUser) {
-                    IconButton(onClick = onDeleteClicked) { Icon(Icons.Default.Delete, contentDescription = "Delete") }
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(post.text)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onLikeClicked) { Icon(if (post.youLiked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, contentDescription = "Like") }
-                Text(post.likes.toString())
-                Spacer(Modifier.weight(1f))
-                Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Comment")
-                Spacer(Modifier.width(12.dp))
-                Icon(Icons.Default.Share, contentDescription = "Share")
-            }
-        }
-    }
-}
+// PostCard is defined in FeedScreen.kt
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChatListScreen(chats: List<ChatItem>, onChatClick: (ChatItem) -> Unit, onNewChat: (name: String, isGroup: Boolean) -> Unit) {
-    var showNewChatDialog by remember { mutableStateOf(false) }
-    var searchText by remember { mutableStateOf("") }
+// ChatListScreen is defined in ChatScreen.kt
 
-    val filteredChats = chats.filter { it.name.contains(searchText, ignoreCase = true) }
+// ChatRow is defined in ChatScreen.kt
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Messages", fontWeight = FontWeight.Bold) },
-                actions = { IconButton(onClick = { showNewChatDialog = true }) { Icon(Icons.Default.Add, contentDescription = "New Conversation") } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
-            )
-        }
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            OutlinedTextField(value = searchText, onValueChange = { searchText = it }, label = { Text("Search conversations...") }, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(filteredChats) { chat -> ChatRow(chat) { onChatClick(chat) } }
-            }
-        }
-    }
+// ConversationScreen is defined in ChatScreen.kt
 
-    if (showNewChatDialog) {
-        NewConversationDialog(onDismiss = { showNewChatDialog = false }) { name, isGroup ->
-            onNewChat(name, isGroup)
-            showNewChatDialog = false
-        }
-    }
-}
+// MessageBubble is defined in ChatScreen.kt
 
-@Composable
-fun ChatRow(chat: ChatItem, onClick: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.size(48.dp).background(MaterialTheme.colorScheme.secondaryContainer, CircleShape), contentAlignment = Alignment.Center) {
-            Text(getAvatarFor(chat), fontSize = 24.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
-        }
-        Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(chat.name, fontWeight = FontWeight.Bold)
-            Text(chat.messages.lastOrNull()?.text ?: "No messages", maxLines = 1)
-        }
-        Text(chat.messages.lastOrNull()?.timestamp ?: "", fontSize = 12.sp)
-    }
-}
+// NewConversationDialog is defined in ChatScreen.kt
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ConversationScreen(chat: ChatItem, onBack: () -> Unit, onSendMessage: (String) -> Unit) {
-    var text by remember { mutableStateOf("") }
-    val listState = rememberLazyListState()
+// ProfileScreen is defined in ProfileScreen.kt
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(chat.name, fontWeight = FontWeight.Bold) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
-            )
-        },
-        bottomBar = {
-            Row(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(value = text, onValueChange = { text = it }, placeholder = { Text("Type a message...") }, modifier = Modifier.weight(1f))
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = {
-                    if (text.isNotBlank()) {
-                        onSendMessage(text)
-                        text = ""
-                    }
-                }) { Text("Send") }
-            }
-        }
-    ) { padding ->
-        LazyColumn(state = listState, modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 8.dp), reverseLayout = true) {
-            items(chat.messages.reversed()) { message -> MessageBubble(message) }
-        }
-    }
-}
+// ProfileSummaryTab is defined in ProfileScreen.kt
 
-@Composable
-fun MessageBubble(message: Message) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = if (message.isFromUser) Arrangement.End else Arrangement.Start) {
-        Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = if (message.isFromUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer), modifier = Modifier.widthIn(max = 300.dp)) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(message.text)
-                Text(message.timestamp, fontSize = 12.sp, modifier = Modifier.align(Alignment.End))
-            }
-        }
-    }
-}
-
-@Composable
-fun NewConversationDialog(onDismiss: () -> Unit, onCreate: (name: String, isGroup: Boolean) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var isGroup by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("New Conversation") },
-        text = {
-            Column {
-                Text("Start a new chat with someone or create a group")
-                Spacer(Modifier.height(16.dp))
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Contact name") })
-                Spacer(Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(onClick = { isGroup = false }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = if (!isGroup) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)) { Text("Individual") }
-                    Spacer(Modifier.width(8.dp))
-                    Button(onClick = { isGroup = true }, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = if (isGroup) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)) { Text("Group") }
-                }
-            }
-        },
-        confirmButton = { Button(onClick = { if (name.isNotBlank()) onCreate(name, isGroup) }, enabled = name.isNotBlank()) { Text("Create") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
-    )
-}
-
-@Composable
-fun ProfileScreen(darkTheme: Boolean, onToggleTheme: () -> Unit) {
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Summary", "Settings")
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = { Text(title) }
-                )
-            }
-        }
-        when (selectedTab) {
-            0 -> ProfileSummaryTab()
-            1 -> ProfileSettingsTab(darkTheme, onToggleTheme)
-        }
-    }
-}
-
-@Composable
-fun ProfileSummaryTab() {
-    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text("Profile Summary", style = MaterialTheme.typography.headlineMedium)
-        Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
-            Column(modifier = Modifier.padding(16.dp)) { Text("Heart Rate Chart (Placeholder)", style = MaterialTheme.typography.bodyLarge) }
-        }
-        Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
-            Column(modifier = Modifier.padding(16.dp)) { Text("Mood Pie Chart (Placeholder)", style = MaterialTheme.typography.bodyLarge) }
-        }
-    }
-}
-
-@Composable
-fun ProfileSettingsTab(darkTheme: Boolean, onToggleTheme: () -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item {
-            Text("Settings", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("Dark Mode", modifier = Modifier.weight(1f))
-                Switch(checked = darkTheme, onCheckedChange = { onToggleTheme() })
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { throw RuntimeException("Test Crash") }, modifier = Modifier.fillMaxWidth()) { Text("Test Crash") }
-        }
-    }
-}
+// ProfileSettingsTab is defined in ProfileScreen.kt
 
 // --- Helper Functions ---
 fun getAvatarFor(chat: ChatItem): String {
@@ -799,5 +484,3 @@ fun getAvatarFor(chat: ChatItem): String {
 fun DefaultPreview() {
     MindTheme(darkTheme = true) {
         MindScapeApp()
-    }
-}
