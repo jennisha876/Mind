@@ -45,8 +45,8 @@ fun FeedScreen(
             Post(
                 1,
                 "Sarah",
-                R.drawable.avatar_female_2,
-                "Just finished a 10-minute meditation. Feeling calm.",
+                avatar =
+                    "Just finished a 10-minute meditation. Feeling calm.",
                 "10:30 AM",
                 12,
                 false,
