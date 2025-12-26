@@ -406,14 +406,6 @@ fun openJitsi(context: Context, url: String) {
     context.startActivity(intent)
 }
 
-// --- Helper Functions ---
-fun getAvatarFor(chat: ChatItem): String {
-    return when {
-        chat.isAI -> "🤖"
-        chat.isGroup -> "👥"
-        else -> chat.name.firstOrNull()?.uppercase() ?: " "
-    }
-}
 
 // Remove duplicate getGreeting() and keep one
 fun getGreeting(): String {
