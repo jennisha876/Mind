@@ -231,9 +231,7 @@ fun MessageBubble(message: Message) {
 // ---------- NEW CHAT DIALOG ----------
 
 @Composable
-fun NewConversationDialog(
-    onDismiss: () -> Unit,
-    onCreate: (String, Boolean) -> Unit
+fun NewConversationDialog(onDismiss: () -> Unit, onCreate: (String, Boolean) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var isGroup by remember { mutableStateOf(false) }

@@ -1,5 +1,6 @@
 package com.example.mind
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,45 +26,48 @@ import java.util.*
 
 
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun FeedScreen(
     currentUserAvatar: Int = R.drawable.ic_launcher_foreground // ← fallback avatar
 ) {
     val currentUser = "You"
 
-    val posts = remember {
-        mutableStateListOf(
-            FeedPost(
-                id = 1,
-                user = "Sarah",
-                avatarRes = R.drawable.ic_launcher_foreground,
-                text = "Just finished a 10-minute meditation. Feeling calm.",
-                timestamp = "10:30 AM",
-                likes = 12,
-                youLiked = false,
-                tags = listOf("#Mindfulness")
-            ),
-            FeedPost(
-                id = 2,
-                user = "John",
-                avatarRes = R.drawable.ic_launcher_foreground,
-                text = "Hit the gym today. Progress over perfection!",
-                timestamp = "11:15 AM",
-                likes = 34,
-                youLiked = true,
-                tags = listOf("#SelfCare")
-            ),
-            FeedPost(
-                id = 3,
-                user = currentUser,
-                avatarRes = currentUserAvatar,
-                text = "Feeling grateful for the small things today.",
-                timestamp = "11:45 AM",
-                likes = 5,
-                youLiked = true,
-                tags = listOf("#Gratitude")
+    val posts = Box {
+        remember {
+            mutableStateListOf(
+                FeedPost(
+                    id = 1,
+                    user = "Sarah",
+                    avatarRes = R.drawable.ic_launcher_foreground,
+                    text = "Just finished a 10-minute meditation. Feeling calm.",
+                    timestamp = "10:30 AM",
+                    likes = 12,
+                    youLiked = false,
+                    tags = listOf("#Mindfulness")
+                ),
+                FeedPost(
+                    id = 2,
+                    user = "John",
+                    avatarRes = R.drawable.ic_launcher_foreground,
+                    text = "Hit the gym today. Progress over perfection!",
+                    timestamp = "11:15 AM",
+                    likes = 34,
+                    youLiked = true,
+                    tags = listOf("#SelfCare")
+                ),
+                FeedPost(
+                    id = 3,
+                    user = currentUser,
+                    avatarRes = currentUserAvatar,
+                    text = "Feeling grateful for the small things today.",
+                    timestamp = "11:45 AM",
+                    likes = 5,
+                    youLiked = true,
+                    tags = listOf("#Gratitude")
+                )
             )
-        )
+        }
     }
 
     var postText by remember { mutableStateOf("") }
@@ -129,6 +133,42 @@ fun FeedScreen(
             )
         }
     }
+}
+
+@Composable
+fun FeedTrendingTopicsCard(selectedTopic: String?, onTopicClick: () -> Unit) {
+    TODO("Not yet implemented")
+}
+
+@Composable
+fun FeedPostCard(
+    post: Int,
+    currentUser: String,
+    onLikeClicked: () -> Unit,
+    onDeleteClicked: () -> remove
+) {
+    TODO("Not yet implemented")
+}
+
+private fun Unit.filter(function: Any) {}
+
+@Composable
+fun FeedCreatePostCard(text: String, onTextChange: () -> Unit, onPostClick: () -> Unit) {
+    TODO("Not yet implemented")
+}
+
+@Composable
+fun FeedPost(
+    id: Int,
+    user: String,
+    avatarRes: Int,
+    text: String,
+    timestamp: String,
+    likes: Int,
+    youLiked: Boolean,
+    tags: List<String>
+) {
+    TODO("Not yet implemented")
 }
 
 
