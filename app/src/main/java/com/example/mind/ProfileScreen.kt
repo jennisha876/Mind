@@ -1,3 +1,4 @@
+import androidx.compose.ui.tooling.preview.Preview
 package com.example.mind
 
 import androidx.compose.foundation.layout.*

@@ -1,3 +1,41 @@
+data class Question(
+    val text: String,
+    val options: List<String>,
+    val multi: Boolean
+)
+package com.example.mind
+enum class Screen {
+    SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN
+}
+
+enum class AppDestinations {
+    HOME, FEED, CHAT, PROFILE
+}
+// --- Data Models and Navigation Types ---
+data class Question(
+    val text: String,
+    val options: List<String>,
+    val multi: Boolean
+)
+
+enum class Screen {
+    SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN
+}
+
+enum class AppDestinations {
+    HOME, FEED, CHAT, PROFILE
+}
+
+fun getGreeting(): String {
+    val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+    return when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        in 18..21 -> "Good evening"
+        else -> "Hello"
+    }
+}
+
 package com.example.mind
 
 import android.content.Intent

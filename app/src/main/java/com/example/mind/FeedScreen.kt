@@ -23,45 +23,45 @@ import com.example.mind.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Post data class is defined in MainActivity.kt or another shared file.
+
 
 @Composable
 fun FeedScreen(
-    currentUserAvatar: Int = R.drawable.avatar_female_1 // ← from avatar selection
+    currentUserAvatar: Int = R.drawable.ic_launcher_foreground // ← fallback avatar
 ) {
     val currentUser = "You"
 
     val posts = remember {
         mutableStateListOf(
-            Post(
-                1,
-                "Sarah",
-                avatar =
-                    "Just finished a 10-minute meditation. Feeling calm.",
-                "10:30 AM",
-                12,
-                false,
-                listOf("#Mindfulness")
+            FeedPost(
+                id = 1,
+                user = "Sarah",
+                avatarRes = R.drawable.ic_launcher_foreground,
+                text = "Just finished a 10-minute meditation. Feeling calm.",
+                timestamp = "10:30 AM",
+                likes = 12,
+                youLiked = false,
+                tags = listOf("#Mindfulness")
             ),
-            Post(
-                2,
-                "John",
-                R.drawable.avatar_male_1,
-                "Hit the gym today. Progress over perfection!",
-                "11:15 AM",
-                34,
-                true,
-                listOf("#SelfCare")
+            FeedPost(
+                id = 2,
+                user = "John",
+                avatarRes = R.drawable.ic_launcher_foreground,
+                text = "Hit the gym today. Progress over perfection!",
+                timestamp = "11:15 AM",
+                likes = 34,
+                youLiked = true,
+                tags = listOf("#SelfCare")
             ),
-            Post(
-                3,
-                currentUser,
-                currentUserAvatar,
-                "Feeling grateful for the small things today.",
-                "11:45 AM",
-                5,
-                true,
-                listOf("#Gratitude")
+            FeedPost(
+                id = 3,
+                user = currentUser,
+                avatarRes = currentUserAvatar,
+                text = "Feeling grateful for the small things today.",
+                timestamp = "11:45 AM",
+                likes = 5,
+                youLiked = true,
+                tags = listOf("#Gratitude")
             )
         )
     }
@@ -71,22 +71,21 @@ fun FeedScreen(
 
     val filteredPosts =
         if (selectedTopic == null) posts
-        else posts.filter { it.tags.contains(selectedTopic) }
+        else posts.filter { post -> post.tags.contains(selectedTopic) }
 
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
         item {
-            CreatePostCard(
+            FeedCreatePostCard(
                 text = postText,
                 onTextChange = { postText = it },
                 onPostClick = {
                     if (postText.isNotBlank()) {
                         posts.add(
                             0,
-                            Post(
+                            FeedPost(
                                 id = posts.size + 1,
                                 user = currentUser,
                                 avatarRes = currentUserAvatar,
@@ -97,7 +96,7 @@ fun FeedScreen(
                                 ).format(Date()),
                                 likes = 0,
                                 youLiked = false,
-                                tags = postText.split(" ").filter { it.startsWith("#") }
+                                tags = postText.split(" ").filter { word -> word.startsWith("#") }
                             )
                         )
                         postText = ""
@@ -105,20 +104,18 @@ fun FeedScreen(
                 }
             )
         }
-
         item {
-            TrendingTopicsCard(
+            FeedTrendingTopicsCard(
                 selectedTopic = selectedTopic,
                 onTopicClick = { selectedTopic = it }
             )
         }
-
-        items(filteredPosts, key = { it.id }) { post ->
-            PostCard(
+        items(filteredPosts, key = { post -> post.id }) { post ->
+            FeedPostCard(
                 post = post,
                 currentUser = currentUser,
                 onLikeClicked = {
-                    val index = posts.indexOfFirst { it.id == post.id }
+                    val index = posts.indexOfFirst { p -> p.id == post.id }
                     if (index != -1) {
                         posts[index] = post.copy(
                             likes = if (post.youLiked) post.likes - 1 else post.likes + 1,
@@ -134,8 +131,4 @@ fun FeedScreen(
     }
 }
 
-// CreatePostCard is defined in MainActivity.kt or another shared file.
 
-// TrendingTopicsCard is defined in MainActivity.kt or another shared file.
-
-// PostCard is defined in MainActivity.kt or another shared file.
