@@ -48,16 +48,20 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-enum class Screen { SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN }
+public final enum class Screen { SPLASH, AUTH, QUESTIONNAIRE, AVATAR, MAIN }
 
-enum class AppDestinations(val label: String, val icon: ImageVector) {
+public final enum class AppDestinations(val label: String, val icon: ImageVector) {
     HOME("Home", Icons.Filled.Home),
     FEED("Feed", Icons.AutoMirrored.Filled.Article),
     CHAT("Chat", Icons.AutoMirrored.Filled.Chat),
     PROFILE("Profile", Icons.Filled.Person),
 }
 
-data class Question(val text: String, val options: List<String>, val multi: Boolean)
+public final data class Question(
+    public final val text: String,
+    public final val options: List<String>,
+    public final val multi: Boolean
+)
 data class Message(val text: String, val isFromUser: Boolean, val timestamp: String)
 data class ChatItem(val id: String = UUID.randomUUID().toString(), val name: String, val isGroup: Boolean = false, val isAI: Boolean = false, val messages: List<Message> = emptyList())
 
@@ -424,3 +428,8 @@ fun HomeScreenPreview() {
     MindTheme(darkTheme = true) { HomeScreen(username = "Jennisha") }
 }
 
+@Preview()
+@Composable
+fun DefaultPreview() {
+    MindTheme(darkTheme = true) { HomeScreen(username = "Jennisha") }
+}
