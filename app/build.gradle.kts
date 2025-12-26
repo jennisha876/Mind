@@ -1,9 +1,11 @@
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
     alias(libs.plugins.google.firebase.crashlytics)
+    alias(libs.plugins.google.firebase.appdistribution)
 }
 
 android {
@@ -27,6 +29,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseAppDistribution {
+                releaseNotes="Initial release with all screens and features."
+                testers="smithjennisha15@gmail.com, sabrinasmith2456@yahoo.com, lattysmith1995@gmail.com"
+            }
         }
     }
     compileOptions {
@@ -55,6 +61,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(libs.firebase.crashlytics)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.firebase.inappmessaging.display)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
