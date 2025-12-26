@@ -21,21 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.UUID
 
-// ---------- MODELS ----------
 
-data class Message(
-    val id: String = UUID.randomUUID().toString(),
-    val text: String,
-    val isFromUser: Boolean,
-    val timestamp: String
-)
 
-data class ChatItem(
-    val id: String = UUID.randomUUID().toString(),
-    val name: String,
-    val isAI: Boolean = false,
-    val messages: List<Message> = emptyList()
-)
 
 // ---------- CHAT LIST ----------
 
@@ -88,7 +75,6 @@ fun ChatListScreen(
             onDismiss = { showDialog = false },
             onCreate = { name, isGroup ->
                 onNewChat(name, isGroup)
-                showDialog = false
             }
         )
     }
@@ -138,11 +124,7 @@ fun ChatRow(chat: ChatItem, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConversationScreen(
-    chat: ChatItem,
-    onBack: () -> Unit,
-    onSendMessage: (String) -> Unit
-) {
+fun ConversationScreen(chat: ChatItem, onBack: () -> Unit, onSendMessage: (String) -> Unit) {
     var input by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 

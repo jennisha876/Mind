@@ -1,6 +1,6 @@
-import androidx.compose.ui.tooling.preview.Preview
 package com.example.mind
 
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
