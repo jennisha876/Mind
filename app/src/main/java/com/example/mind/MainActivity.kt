@@ -210,7 +210,7 @@ fun QuestionnaireScreen(onFinished: () -> Unit) {
     val question = QUESTIONS[step]
     var selectedOptions by remember(step) { mutableStateOf(answers[step] ?: emptyList()) }
 
-    val onNext: () -> Unit = {
+    fun onNext() {
         answers[step] = selectedOptions
         if (step < QUESTIONS.lastIndex) {
             step++
@@ -218,7 +218,11 @@ fun QuestionnaireScreen(onFinished: () -> Unit) {
             onFinished()
         }
     }
-    val onPrev: () -> Unit = { if (step > 0) step-- }
+    fun onPrev() {
+        if (step > 0) {
+            step--
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
         Text("Question ${step + 1} of ${QUESTIONS.size}", fontWeight = FontWeight.Bold)
@@ -247,11 +251,11 @@ fun QuestionnaireScreen(onFinished: () -> Unit) {
         Spacer(Modifier.height(24.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            if (step > 0) TextButton(onClick = onPrev) { Text("Back") } else Spacer(Modifier)
+            if (step > 0) TextButton(onClick = { onPrev() }) { Text("Back") } else Spacer(Modifier)
             Row {
-                TextButton(onClick = onNext) { Text("Skip") }
+                TextButton(onClick = { onNext() }) { Text("Skip") }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = onNext, enabled = selectedOptions.isNotEmpty()) { Text(if (step < QUESTIONS.lastIndex) "Next" else "Finish") }
+                Button(onClick = { onNext() }, enabled = selectedOptions.isNotEmpty()) { Text(if (step < QUESTIONS.lastIndex) "Next" else "Finish") }
             }
         }
     }
