@@ -183,6 +183,7 @@ def overview_page():
 # -----------------------
 def users_page():
     st.title("Users Management")
+    users = load_users()
     posts = load_posts()
     vitals = load_vitals()
 
@@ -326,7 +327,7 @@ def users_page():
 # -----------------------
 def analytics_page():
     st.title("Analytics")
-    users = load_users()
+    # users = load_users()  # Removed unused variable
     posts = load_posts()
     vitals = load_vitals()
 
